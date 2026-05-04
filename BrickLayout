@@ -1,0 +1,107 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class BrickLayout {
+
+    private ArrayList<Brick> bricks;
+    private int[][] grid;
+    private int currentBrickIndex = 0;
+    private Brick activeBrick = null;
+    private int activeRow = 0;
+
+    public BrickLayout(String inputFile) {
+        ArrayList<String> fileData = getFileData(inputFile);
+        this.bricks = new ArrayList<>();
+
+        for (String line : fileData) {
+            String[] points = line.split(",");
+            int start = Integer.parseInt(points[0]);
+            int end = Integer.parseInt(points[1]);
+            bricks.add(new Brick(start, end));
+        }
+
+        grid = new int[30][40];
+    }
+
+    public int[][] getGrid() {
+        return grid;
+    }
+
+    public void dropOneBrick() {
+        if (currentBrickIndex >= bricks.size()) return;
+
+        Brick b = bricks.get(currentBrickIndex);
+
+        int row = 0;
+
+        // find lowest valid row
+        while (canPlace(b, row + 1)) {
+            row++;
+        }
+
+        // place brick
+        for (int c = b.getStart(); c <= b.getEnd(); c++) {
+            grid[row][c] = 1;
+        }
+
+        currentBrickIndex++;
+    }
+
+    public  ArrayList<String> getFileData(String fileName) {
+        File f = new File(fileName);
+        Scanner s = null;
+        try {
+            s = new Scanner(f);
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("File not found.");
+            System.exit(1);
+        }
+        ArrayList<String> fileData = new ArrayList<String>();
+        while (s.hasNextLine())
+            fileData.add(s.nextLine());
+        System.out.println("WORKING DIR = " + new File(".").getAbsolutePath());
+        System.out.println("LOOKING FOR = " + new File("input_file.txt").getAbsolutePath());
+        return fileData;
+    }
+
+    private boolean canPlace(Brick b, int row) {
+        if (row >= grid.length) return false;
+
+        for (int c = b.getStart(); c <= b.getEnd(); c++) {
+            if (grid[row][c] == 1) return false;
+        }
+
+        return true;
+    }
+
+    public void update() {
+        if (activeBrick == null) {
+            if (currentBrickIndex >= bricks.size()) return;
+
+            activeBrick = bricks.get(currentBrickIndex);
+            activeRow = 0;
+            currentBrickIndex++;
+        }
+
+        if (canPlace(activeBrick, activeRow + 1)) {
+            activeRow++;
+        } else {
+            // lock into grid
+            for (int c = activeBrick.getStart(); c <= activeBrick.getEnd(); c++) {
+                grid[activeRow][c] = 1;
+            }
+            activeBrick = null;
+        }
+    }
+
+    public Brick getActiveBrick() {
+        return activeBrick;
+    }
+
+    public int getActiveRow() {
+        return activeRow;
+    }
+}
