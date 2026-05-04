@@ -1,0 +1,88 @@
+import java.awt.*;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+import javax.swing.JPanel;
+
+public class DrawPanel extends JPanel implements MouseListener {
+
+    BrickLayout layout;
+
+    public DrawPanel() {
+        this.addMouseListener(this);
+        layout = new BrickLayout("src/input_file.txt");
+
+    }
+
+    public void update() {
+        layout.update();
+    }
+
+
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        int[][] grid = layout.getGrid();
+        int x = 10;
+        int y = 10;
+
+        // 🔴 draw placed bricks (RED)
+        for (int r = 0; r < 30; r++) {
+            for (int c = 0; c < 40; c++) {
+                Graphics2D g2 = (Graphics2D) g;
+
+                g.drawRect(x, y, 20, 20);
+
+                if (grid[r][c] == 1) {
+                    g2.setColor(Color.RED);
+                    g2.fillRect(x, y, 20, 20);
+                    g2.setColor(Color.BLACK);
+                }
+
+                x += 24;
+            }
+            x = 10;
+            y += 24;
+        }
+
+        // 🔵 ADD THIS (falling brick)
+        Brick active = layout.getActiveBrick();
+        int activeRow = layout.getActiveRow();
+
+        if (active != null) {
+            for (int c = active.getStart(); c <= active.getEnd(); c++) {
+                int xPos = 10 + c * 24;
+                int yPos = 10 + activeRow * 24;
+
+                g.setColor(Color.BLUE);
+                g.fillRect(xPos, yPos, 20, 20);
+                g.setColor(Color.BLACK);
+            }
+        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        layout.dropOneBrick();
+        repaint(); // 🔥 REQUIRED
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+}
