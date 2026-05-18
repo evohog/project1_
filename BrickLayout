@@ -12,7 +12,7 @@ public class BrickLayout {
     private int activeRow = 0;
 
     public BrickLayout(String inputFile) {
-        ArrayList<String> fileData = getFileData(inputFile);
+        ArrayList<String> fileData=getFileData(inputFile);
         this.bricks = new ArrayList<>();
 
         for (String line : fileData) {
@@ -35,13 +35,9 @@ public class BrickLayout {
         Brick b = bricks.get(currentBrickIndex);
 
         int row = 0;
-
-        // find lowest valid row
         while (canPlace(b, row + 1)) {
             row++;
         }
-
-        // place brick
         for (int c = b.getStart(); c <= b.getEnd(); c++) {
             grid[row][c] = 1;
         }
@@ -62,8 +58,6 @@ public class BrickLayout {
         ArrayList<String> fileData = new ArrayList<String>();
         while (s.hasNextLine())
             fileData.add(s.nextLine());
-        System.out.println("WORKING DIR = " + new File(".").getAbsolutePath());
-        System.out.println("LOOKING FOR = " + new File("input_file.txt").getAbsolutePath());
         return fileData;
     }
 
@@ -89,7 +83,6 @@ public class BrickLayout {
         if (canPlace(activeBrick, activeRow + 1)) {
             activeRow++;
         } else {
-            // lock into grid
             for (int c = activeBrick.getStart(); c <= activeBrick.getEnd(); c++) {
                 grid[activeRow][c] = 1;
             }
